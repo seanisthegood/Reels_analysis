@@ -4,7 +4,7 @@ A data dashboard analyzing Meta Reels' $50B revenue story.
 
 Built in Power BI and HTML/JavaScript.
 
-[Live interactive dashboard](#) · [Substack post](https://seanmhart.substack.com/p/reels-big-business)
+[Live interactive dashboard](https://seanisthegood.github.io/Reels_analysis/) · [Substack post](https://seanmhart.substack.com/p/reels-big-business)
 
 ## What's in here
 - Power BI dashboard (.pbix)
