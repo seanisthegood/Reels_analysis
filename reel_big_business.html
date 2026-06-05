@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reel Big Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #185FA5;
+    --blue-mid: #378ADD;
+    --blue-light: #B5D4F4;
+    --blue-pale: #E6F1FB;
+    --ink: #0D0D0D;
+    --ink-mid: #3a3a3a;
+    --ink-muted: #888780;
+    --rule: #E2E0D8;
+    --bg: #F7F5F0;
+    --white: #FFFFFF;
+    --red: #E24B4A;
+    --amber: #BA7517;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    background: var(--ink);
+    color: var(--white);
+    padding: 2.5rem 3rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 2rem;
+  }
+
+  .masthead-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .masthead-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--white);
+  }
+
+  .masthead-title span {
+    color: var(--blue-mid);
+  }
+
+  .masthead-deck {
+    font-size: 15px;
+    font-weight: 300;
+    color: #B4B2A9;
+    max-width: 480px;
+    line-height: 1.6;
+    margin-top: 1rem;
+  }
+
+  .masthead-meta {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #5F5E5A;
+    line-height: 1.8;
+  }
+
+  /* ── HERO BAND ── */
+  .hero-band {
+    background: var(--blue);
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero-band::after {
+    content: '$50B';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: rgba(255,255,255,0.04);
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 12vw, 120px);
+    color: var(--white);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 80px;
+    background: rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+
+  .hero-context {
+    color: var(--white);
+  }
+
+  .hero-context-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 0.4rem;
+  }
+
+  .hero-context-stat {
+    font-size: clamp(14px, 2vw, 17px);
+    font-weight: 300;
+    line-height: 1.5;
+    opacity: 0.9;
+  }
+
+  .hero-context-stat strong {
+    font-weight: 500;
+    color: var(--white);
+  }
+
+  /* ── TICKER ── */
+  .ticker {
+    background: var(--ink);
+    padding: 0.6rem 3rem;
+    display: flex;
+    gap: 3rem;
+    overflow: hidden;
+    border-bottom: 1px solid #222;
+  }
+
+  .ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #888780;
+  }
+
+  .ticker-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 10px;
+  }
+
+  .ticker-val {
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  .ticker-sep { color: #333; }
+
+  /* ── CONTENT GRID ── */
+  .content {
+    padding: 2.5rem 3rem;
+    display: grid;
+    gap: 2rem;
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--rule);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border: 0.5px solid var(--rule);
+    border-radius: 2px;
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-mid);
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── TWO COL ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+
+  /* ── CHART PANEL ── */
+  .chart-panel {
+    background: var(--white);
+    border: 0.5px solid var(--rule);
+    border-radius: 2px;
+    padding: 1.5rem;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+  }
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-mid);
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .legend-dot {
+    width: 20px;
+    height: 2px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  .legend-dot.dashed {
+    background: repeating-linear-gradient(90deg, var(--c) 0, var(--c) 4px, transparent 4px, transparent 8px);
+    background-size: 8px 2px;
+    background-repeat: repeat-x;
+  }
+
+  /* ── BAR CHART ── */
+  .bar-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .bar-name {
+    font-size: 12px;
+    color: var(--ink-mid);
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bar-name.featured { color: var(--blue); font-weight: 500; }
+
+  .bar-track {
+    height: 22px;
+    background: #F1EFE8;
+    border-radius: 1px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bar-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-align: right;
+  }
+
+  .bar-val.featured { color: var(--blue); font-weight: 500; }
+
+  /* ── CLOCK GRID ── */
+  .clock-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border: 0.5px solid var(--rule);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .clock-cell {
+    background: var(--white);
+    padding: 1.25rem;
+  }
+
+  .clock-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .clock-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--blue);
+    line-height: 1;
+  }
+
+  .clock-sub {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 0.2rem;
+    font-weight: 300;
+  }
+
+  /* ── LIVE COUNTER ── */
+  .live-counter {
+    background: var(--ink);
+    border-radius: 2px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1px;
+  }
+
+  .live-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888780;
+  }
+
+  .live-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    color: var(--white);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .live-pulse {
+    width: 8px;
+    height: 8px;
+    background: var(--blue-mid);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* ── DONUT ── */
+  .donut-wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .donut-canvas-wrap {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+  }
+
+  .donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .donut-center-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--blue);
+    line-height: 1;
+  }
+
+  .donut-center-label {
+    font-size: 9px;
+    color: var(--ink-muted);
+    text-align: center;
+    line-height: 1.3;
+    margin-top: 2px;
+  }
+
+  .donut-legend { display: flex; flex-direction: column; gap: 6px; }
+
+  .donut-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .donut-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  .donut-name { color: var(--ink-mid); flex: 1; }
+  .donut-pct { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-muted); }
+
+  /* ── ROAS CARD ── */
+  .roas-card {
+    background: var(--blue-pale);
+    border-radius: 2px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .roas-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--blue);
+    line-height: 1;
+  }
+
+  .roas-label {
+    font-size: 12px;
+    color: var(--ink-mid);
+    font-weight: 300;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+  }
+
+  /* ── STAT STRIP ── */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 0.5px solid var(--rule);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--rule);
+    gap: 0.5px;
+  }
+
+  .stat-cell {
+    background: var(--white);
+    padding: 1.25rem;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 0.2rem;
+    font-weight: 300;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-left: 3px solid var(--blue);
+    padding: 1rem 1.25rem;
+    background: var(--white);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--ink-mid);
+  }
+
+  .callout strong { font-weight: 500; color: var(--ink); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: #444;
+    letter-spacing: 0.05em;
+  }
+
+  .footer-sources {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: #444;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  .delay-5 { animation-delay: 0.5s; }
+
+  @media (max-width: 768px) {
+    .masthead { grid-template-columns: 1fr; padding: 1.5rem; }
+    .hero-band { padding: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .content { padding: 1.5rem; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .stat-strip { grid-template-columns: 1fr 1fr; }
+    .ticker { padding: 0.6rem 1.5rem; }
+    .donut-wrap { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 1.5rem; }
+    .footer-sources { text-align: center; }
+    .masthead-meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead fade-up">
+  <div>
+    <div class="masthead-eyebrow">Data Report · Meta Platforms · 2025</div>
+    <div class="masthead-title">Reel<br><span>Big</span><br>Business</div>
+    <p class="masthead-deck">A single video format inside Meta's apps generates more annual revenue than Nike. More than Coca-Cola. More than Netflix.</p>
+  </div>
+  <div class="masthead-meta">
+    Data through Q3 2025<br>
+    Sources: Meta IR · SEC Filings<br>
+    eMarketer · Triple Whale<br>
+    IFPI · PwC
+  </div>
+</header>
+
+<!-- HERO BAND -->
+<div class="hero-band fade-up delay-1">
+  <div class="hero-number">$50B</div>
+  <div class="hero-divider"></div>
+  <div class="hero-context">
+    <div class="hero-context-label">Annual revenue run rate · Q3 2025</div>
+    <div class="hero-context-stat">From <strong>$0 to $50 billion</strong> in five years —<br>faster than most companies reach $1 billion.</div>
+  </div>
+  <div class="hero-divider"></div>
+  <div class="hero-context">
+    <div class="hero-context-label">vs. The original</div>
+    <div class="hero-context-stat">A TikTok copycat now makes<br><strong>3× what TikTok makes.</strong></div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker fade-up delay-2">
+  <div class="ticker-item">
+    <span class="ticker-label">Per second</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-val">$1,585</span>
+  </div>
+  <div class="ticker-item">
+    <span class="ticker-label">Per minute</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-val">$95,129</span>
+  </div>
+  <div class="ticker-item">
+    <span class="ticker-label">Per hour</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-val">$5.7M</span>
+  </div>
+  <div class="ticker-item">
+    <span class="ticker-label">Per day</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-val">$137M</span>
+  </div>
+  <div class="ticker-item">
+    <span class="ticker-label">Daily plays</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-val">200B+</span>
+  </div>
+  <div class="ticker-item">
+    <span class="ticker-label">% of IG ads</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-val">50%</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <!-- ROW 1: Growth race + Comparison bars -->
+  <div class="two-col fade-up delay-2">
+
+    <!-- Panel 2: Line chart -->
+    <div class="chart-panel">
+      <div class="chart-header">
+        <div class="chart-title">The growth race · Ad revenue 2020–2025</div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#185FA5;"></div>
+            <span>Reels</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot dashed" style="--c:#E24B4A; background: none;"></div>
+            <span>TikTok</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot dashed" style="--c:#B4B2A9; background: none;"></div>
+            <span>Linear TV</span>
+          </div>
+        </div>
+      </div>
+      <div style="position:relative; height:240px;">
+        <canvas id="growthChart"></canvas>
+      </div>
+      <div class="callout" style="margin-top:1rem;">
+        Reels crossed TikTok's revenue in <strong>2024</strong>. Linear TV at $55B remains ahead — but the gap is closing fast.
+      </div>
+    </div>
+
+    <!-- Panel 3: Company bar chart -->
+    <div class="chart-panel">
+      <div class="chart-header">
+        <div class="chart-title">Bigger than you think · Annual revenue ($B)</div>
+      </div>
+      <div class="bar-list" id="barList"></div>
+      <div class="callout" style="margin-top:1rem;">
+        Reels generates more revenue than the <strong>entire global recorded music industry</strong>.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2: Who's spending + Clock -->
+  <div class="two-col fade-up delay-3">
+
+    <!-- Panel 4: GDP comparison -->
+    <div class="card">
+      <div class="section-label">Bigger than countries · Reels vs national GDP</div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:13px; font-weight:500; color:var(--ink-mid); margin-bottom:0.4rem;">Reels' $50B run rate exceeds the entire GDP of:</div>
+        <div style="font-size:12px; color:var(--ink-muted); font-weight:300; line-height:1.6;">A single video feature generates more economic output than entire nations.</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0; border:0.5px solid var(--rule); border-radius:2px; overflow:hidden;">
+        <div style="display:grid; grid-template-columns:1fr auto auto; gap:1rem; padding:0.6rem 1rem; background:var(--blue); align-items:center;">
+          <span style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.6);">Country</span>
+          <span style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.6); text-align:right;">GDP 2024</span>
+          <span style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.6); text-align:right;">Population</span>
+        </div>
+        <div id="gdpRows"></div>
+      </div>
+      <div class="callout" style="margin-top:1rem;">
+        Iceland — 400,000 people, an entire national economy — generates <strong>less than one video feature</strong> inside Meta's apps.
+      </div>
+      <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--ink-muted); margin-top:0.75rem;">
+        Source: IMF World Economic Outlook Apr 2026 · World Bank 2024
+      </div>
+    </div>
+
+    <!-- Panel 5: The clock -->
+    <div class="card">
+      <div class="section-label">The clock · What Reels earns while you watch</div>
+      <div class="clock-grid">
+        <div class="clock-cell">
+          <div class="clock-label">Per second</div>
+          <div class="clock-val">$1,585</div>
+          <div class="clock-sub">every second, 24/7</div>
+        </div>
+        <div class="clock-cell">
+          <div class="clock-label">Per minute</div>
+          <div class="clock-val">$95,129</div>
+          <div class="clock-sub">while you scroll</div>
+        </div>
+        <div class="clock-cell">
+          <div class="clock-label">Per hour</div>
+          <div class="clock-val">$5.7M</div>
+          <div class="clock-sub">while you sleep</div>
+        </div>
+        <div class="clock-cell">
+          <div class="clock-label">Per day</div>
+          <div class="clock-val">$137M</div>
+          <div class="clock-sub">every single day</div>
+        </div>
+      </div>
+
+      <div class="live-counter" style="margin-top:1px;">
+        <div>
+          <div class="live-label">Reels revenue since you opened this page</div>
+          <div class="live-number" id="liveCounter">$0</div>
+        </div>
+        <div class="live-pulse"></div>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <div class="callout">
+          In the time it takes to watch one 30-second Reel, Meta earns <strong>$47,565</strong> from Reels ads globally.
+        </div>
+      </div>
+
+      <!-- Milestone timeline -->
+      <div style="margin-top:1.25rem;">
+        <div class="section-label">Revenue milestones</div>
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div style="display:grid; grid-template-columns:80px 1fr; gap:1rem; align-items:center; font-size:12px;">
+            <span style="font-family:'DM Mono',monospace; color:var(--ink-muted);">Aug 2020</span>
+            <span style="color:var(--ink-mid);">Launch — $0 revenue</span>
+          </div>
+          <div style="display:grid; grid-template-columns:80px 1fr; gap:1rem; align-items:center; font-size:12px;">
+            <span style="font-family:'DM Mono',monospace; color:var(--ink-muted);">Oct 2022</span>
+            <span style="color:var(--ink-mid);">First milestone — <strong style="color:var(--blue);">$3B</strong> run rate</span>
+          </div>
+          <div style="display:grid; grid-template-columns:80px 1fr; gap:1rem; align-items:center; font-size:12px;">
+            <span style="font-family:'DM Mono',monospace; color:var(--ink-muted);">Jul 2023</span>
+            <span style="color:var(--ink-mid);">9 months later — <strong style="color:var(--blue);">$10B</strong> · 3.3× growth</span>
+          </div>
+          <div style="display:grid; grid-template-columns:80px 1fr; gap:1rem; align-items:center; font-size:12px;">
+            <span style="font-family:'DM Mono',monospace; color:var(--ink-muted);">Q3 2025</span>
+            <span style="color:var(--ink-mid);">27 months later — <strong style="color:var(--blue);">$50B</strong> · 5× growth</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Stat strip -->
+  <div class="fade-up delay-4">
+    <div class="section-label">Key metrics · Q3 2025</div>
+    <div class="stat-strip">
+      <div class="stat-cell">
+        <div class="stat-label">% of IG time (US)</div>
+        <div class="stat-val">50%</div>
+        <div class="stat-sub">majority of Instagram time</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">% of IG ads on Reels</div>
+        <div class="stat-val">50%+</div>
+        <div class="stat-sub">up from 19% in Q3 2024</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Daily plays</div>
+        <div class="stat-val">200B</div>
+        <div class="stat-sub">billion per day globally</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Marketers using IG ads</div>
+        <div class="stat-val">79%</div>
+        <div class="stat-sub">of all digital marketers</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Reel Big Business</div>
+  <div class="footer-sources">
+    Meta Investor Relations · SEC 8-K Filings · eMarketer · Triple Whale · IFPI · PwC Global E&M Outlook<br>
+    Reels run rate announced by Mark Zuckerberg, Q3 2025 earnings call · Data through Q3 2025
+  </div>
+</footer>
+
+<script>
+// ── GROWTH RACE LINE CHART ──
+const growthCtx = document.getElementById('growthChart').getContext('2d');
+new Chart(growthCtx, {
+  type: 'line',
+  data: {
+    labels: ['2020','2021','2022','2023','2024','2025'],
+    datasets: [
+      {
+        label: 'Reels',
+        data: [0, 0, 3, 10, 35, 50],
+        borderColor: '#185FA5',
+        backgroundColor: 'rgba(24,95,165,0.06)',
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointBackgroundColor: '#185FA5',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        tension: 0.35,
+        fill: true,
+        order: 1
+      },
+      {
+        label: 'TikTok',
+        data: [1.1, 3.9, 9.9, 13.2, 23.6, 33.1],
+        borderColor: '#E24B4A',
+        borderWidth: 1.5,
+        borderDash: [5, 3],
+        pointRadius: 3,
+        pointBackgroundColor: '#E24B4A',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 1.5,
+        tension: 0.35,
+        fill: false,
+        order: 2
+      },
+      {
+        label: 'Linear TV',
+        data: [68, 64.7, 66.6, 62, 58, 55],
+        borderColor: '#B4B2A9',
+        borderWidth: 1.5,
+        borderDash: [2, 4],
+        pointRadius: 3,
+        pointBackgroundColor: '#B4B2A9',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 1.5,
+        tension: 0.35,
+        fill: false,
+        order: 3
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 1200, easing: 'easeOutQuart' },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#0D0D0D',
+        titleFont: { family: 'DM Mono', size: 11 },
+        bodyFont: { family: 'DM Sans', size: 12 },
+        padding: 10,
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y}B`
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: '#F1EFE8' },
+        border: { color: '#E2E0D8' },
+        ticks: {
+          font: { family: 'DM Mono', size: 10 },
+          color: '#888780',
+          callback: v => '$' + v + 'B'
+        }
+      },
+      x: {
+        grid: { display: false },
+        border: { color: '#E2E0D8' },
+        ticks: { font: { family: 'DM Mono', size: 10 }, color: '#888780' }
+      }
+    }
+  }
+});
+
+// ── COMPANY BAR CHART ──
+const companies = [
+  { name: 'Meta Reels', val: 50, featured: true },
+  { name: 'Coca-Cola', val: 47.9 },
+  { name: 'Nike', val: 44.7 },
+  { name: 'YouTube Ads', val: 46 },
+  { name: 'Netflix', val: 45.2 },
+  { name: 'TikTok', val: 33.1 },
+  { name: 'Global Cinema', val: 33 },
+  { name: 'Glob. Music', val: 29.6 },
+  { name: 'Starbucks', val: 37 },
+  { name: 'McDonald\'s', val: 27 },
+];
+
+// sort descending
+companies.sort((a,b) => b.val - a.val);
+
+const barList = document.getElementById('barList');
+const maxVal = 50;
+
+companies.forEach((c, i) => {
+  const pct = (c.val / maxVal * 100).toFixed(1);
+  const row = document.createElement('div');
+  row.className = 'bar-row';
+  row.innerHTML = `
+    <div class="bar-name ${c.featured ? 'featured' : ''}">${c.name}</div>
+    <div class="bar-track">
+      <div class="bar-fill" style="width:0%; background:${c.featured ? '#185FA5' : (c.val >= 40 ? '#85B7EB' : '#D3D1C7')};"></div>
+    </div>
+    <div class="bar-val ${c.featured ? 'featured' : ''}">$${c.val}B</div>
+  `;
+  barList.appendChild(row);
+  setTimeout(() => {
+    row.querySelector('.bar-fill').style.width = pct + '%';
+  }, 200 + i * 60);
+});
+
+
+// ── GDP COMPARISON TABLE ──
+const gdpData = [
+  { country: 'Iceland',  flag: '🇮🇸', gdp: '$35.4B', pop: '400K',  gdpRaw: 35.4 },
+  { country: 'Cyprus',   flag: '🇨🇾', gdp: '$37.6B', pop: '1.3M',  gdpRaw: 37.6 },
+  { country: 'Estonia',  flag: '🇪🇪', gdp: '$43.1B', pop: '1.4M',  gdpRaw: 43.1 },
+  { country: 'Latvia',   flag: '🇱🇻', gdp: '$43.5B', pop: '1.9M',  gdpRaw: 43.5 },
+  { country: 'Paraguay', flag: '🇵🇾', gdp: '$44.5B', pop: '7.4M',  gdpRaw: 44.5 },
+];
+
+const gdpRows = document.getElementById('gdpRows');
+gdpData.forEach((d, i) => {
+  const row = document.createElement('div');
+  const bg = i % 2 === 0 ? '#FFFFFF' : '#F7F5F0';
+  const barPct = (d.gdpRaw / 50 * 100).toFixed(0);
+  row.style.cssText = `display:grid; grid-template-columns:1fr auto auto; gap:1rem; padding:0.65rem 1rem; background:${bg}; align-items:center; border-bottom:0.5px solid #E2E0D8;`;
+  row.innerHTML = `
+    <div>
+      <div style="font-size:12px; color:#3a3a3a; font-weight:500;">${d.flag} ${d.country}</div>
+      <div style="margin-top:3px; height:4px; background:#E2E0D8; border-radius:2px; overflow:hidden;">
+        <div style="width:0%; height:100%; background:#185FA5; border-radius:2px; transition:width 1s cubic-bezier(0.16,1,0.3,1);" data-pct="${barPct}"></div>
+      </div>
+    </div>
+    <div style="font-family:'DM Mono',monospace; font-size:11px; color:#185FA5; font-weight:500; text-align:right; white-space:nowrap;">${d.gdp}</div>
+    <div style="font-family:'DM Mono',monospace; font-size:11px; color:#888780; text-align:right; white-space:nowrap;">${d.pop}</div>
+  `;
+  gdpRows.appendChild(row);
+  setTimeout(() => {
+    row.querySelector('[data-pct]').style.width = barPct + '%';
+  }, 300 + i * 100);
+});
+
+// Add Reels reference bar at bottom
+const reelsRow = document.createElement('div');
+reelsRow.style.cssText = 'display:grid; grid-template-columns:1fr auto auto; gap:1rem; padding:0.65rem 1rem; background:#E6F1FB; align-items:center;';
+reelsRow.innerHTML = `
+  <div>
+    <div style="font-size:12px; color:#185FA5; font-weight:500;">📱 Meta Reels</div>
+    <div style="margin-top:3px; height:4px; background:#B5D4F4; border-radius:2px; overflow:hidden;">
+      <div style="width:100%; height:100%; background:#185FA5; border-radius:2px;"></div>
+    </div>
+  </div>
+  <div style="font-family:'DM Mono',monospace; font-size:11px; color:#185FA5; font-weight:500; text-align:right;">$50B</div>
+  <div style="font-family:'DM Mono',monospace; font-size:11px; color:#888780; text-align:right;">run rate</div>
+`;
+gdpRows.appendChild(reelsRow);
+
+
+// ── LIVE COUNTER ──
+const startTime = Date.now();
+const revenuePerMs = 50e9 / (365 * 24 * 60 * 60 * 1000);
+
+function updateCounter() {
+  const elapsed = Date.now() - startTime;
+  const earned = elapsed * revenuePerMs;
+  document.getElementById('liveCounter').textContent =
+    '$' + Math.floor(earned).toLocaleString();
+  requestAnimationFrame(updateCounter);
+}
+updateCounter();
+</script>
+</body>
+</html>
