@@ -1,0 +1,283 @@
+================================================================================
+DAX MEASURES FOR REELS REVENUE POWER BI DASHBOARD
+================================================================================
+
+Assumes table name: ReelsRevenue
+Assumes column names match CSV headers
+
+================================================================================
+1. REVENUE RUN RATE GROWTH (MILESTONE TO MILESTONE)
+================================================================================
+
+-- Growth from previous known run rate milestone
+
+Run Rate Growth % =
+VAR CurrentRunRate = SELECTEDVALUE(ReelsRevenue[run_rate_billions])
+VAR PreviousRunRate =
+    CALCULATE(
+        MAX(ReelsRevenue[run_rate_billions]),
+        FILTER(
+            ALL(ReelsRevenue),
+            ReelsRevenue[date] < SELECTEDVALUE(ReelsRevenue[date])
+            && ReelsRevenue[run_rate_billions] <> BLANK()
+        )
+    )
+RETURN
+IF(
+    ISBLANK(CurrentRunRate) || ISBLANK(PreviousRunRate) || PreviousRunRate = 0,
+    BLANK(),
+    DIVIDE(CurrentRunRate - PreviousRunRate, PreviousRunRate) * 100
+)
+
+
+================================================================================
+2. REVENUE PER SECOND / MINUTE / HOUR (FROM RUN RATE)
+================================================================================
+
+Revenue Per Second =
+VAR AnnualRunRate = SELECTEDVALUE(ReelsRevenue[run_rate_billions]) * 1000000000
+VAR SecondsInYear = 365 * 24 * 60 * 60
+RETURN
+DIVIDE(AnnualRunRate, SecondsInYear)
+
+Revenue Per Minute =
+[Revenue Per Second] * 60
+
+Revenue Per Hour =
+[Revenue Per Second] * 3600
+
+Revenue Per Day =
+VAR AnnualRunRate = SELECTEDVALUE(ReelsRevenue[run_rate_billions]) * 1000000000
+RETURN
+DIVIDE(AnnualRunRate, 365)
+
+-- Formatted versions for display
+
+Revenue Per Second (Formatted) =
+FORMAT([Revenue Per Second], "$#,##0")
+
+Revenue Per Minute (Formatted) =
+FORMAT([Revenue Per Minute], "$#,##0")
+
+
+================================================================================
+3. DAYS SINCE LAUNCH
+================================================================================
+
+Days Since Launch =
+VAR LaunchDate = DATE(2020, 8, 5)
+VAR CurrentDate = SELECTEDVALUE(ReelsRevenue[date])
+RETURN
+IF(
+    ISBLANK(CurrentDate),
+    BLANK(),
+    DATEDIFF(LaunchDate, CurrentDate, DAY)
+)
+
+Years Since Launch =
+DIVIDE([Days Since Launch], 365, BLANK())
+
+
+================================================================================
+4. AD INVENTORY SHARE GROWTH
+================================================================================
+
+-- Quarter over quarter change in % of IG ad inventory
+
+Ad Inventory Share Change =
+VAR CurrentShare = SELECTEDVALUE(ReelsRevenue[pct_ig_ad_inventory])
+VAR PreviousShare =
+    CALCULATE(
+        MAX(ReelsRevenue[pct_ig_ad_inventory]),
+        FILTER(
+            ALL(ReelsRevenue),
+            ReelsRevenue[date] < SELECTEDVALUE(ReelsRevenue[date])
+            && ReelsRevenue[pct_ig_ad_inventory] <> BLANK()
+        )
+    )
+RETURN
+IF(
+    ISBLANK(CurrentShare) || ISBLANK(PreviousShare),
+    BLANK(),
+    CurrentShare - PreviousShare
+)
+
+
+================================================================================
+5. TIME SPENT SHARE GROWTH
+================================================================================
+
+Time Spent Share Change =
+VAR CurrentShare = SELECTEDVALUE(ReelsRevenue[pct_ig_time_spent])
+VAR PreviousShare =
+    CALCULATE(
+        MAX(ReelsRevenue[pct_ig_time_spent]),
+        FILTER(
+            ALL(ReelsRevenue),
+            ReelsRevenue[date] < SELECTEDVALUE(ReelsRevenue[date])
+            && ReelsRevenue[pct_ig_time_spent] <> BLANK()
+        )
+    )
+RETURN
+IF(
+    ISBLANK(CurrentShare) || ISBLANK(PreviousShare),
+    BLANK(),
+    CurrentShare - PreviousShare
+)
+
+
+================================================================================
+6. COMPARISON MEASURES (FOR VISUALIZATION)
+================================================================================
+
+-- These return static values for comparison charts
+-- Update values as needed for current data
+
+Nike Revenue =
+46.3
+
+Coca-Cola Revenue =
+47.1
+
+Netflix Revenue =
+45
+
+YouTube Ads Revenue =
+46
+
+TikTok Revenue =
+17
+
+Starbucks Revenue =
+37
+
+McDonald's Revenue =
+27
+
+Spotify Revenue =
+16
+
+Global Music Industry =
+29.6
+
+Global Cinema Box Office =
+33
+
+-- Reels as multiple of competitor
+
+Reels vs TikTok Multiple =
+VAR ReelsRevenue = 50
+VAR TikTokRevenue = 17
+RETURN
+DIVIDE(ReelsRevenue, TikTokRevenue)
+
+Reels vs Netflix Multiple =
+VAR ReelsRevenue = 50
+VAR NetflixRevenue = 45
+RETURN
+DIVIDE(ReelsRevenue, NetflixRevenue)
+
+
+================================================================================
+7. MILESTONE COUNTER
+================================================================================
+
+-- Count of revenue milestones reached
+
+Milestones Reached =
+CALCULATE(
+    COUNTROWS(ReelsRevenue),
+    FILTER(
+        ALL(ReelsRevenue),
+        ReelsRevenue[run_rate_billions] <> BLANK()
+        && ReelsRevenue[date] <= MAX(ReelsRevenue[date])
+    )
+)
+
+
+================================================================================
+8. DAILY PLAYS METRICS
+================================================================================
+
+Daily Plays (Latest) =
+CALCULATE(
+    MAX(ReelsRevenue[daily_plays_billions]),
+    FILTER(
+        ALL(ReelsRevenue),
+        ReelsRevenue[daily_plays_billions] <> BLANK()
+    )
+)
+
+Revenue Per Billion Plays =
+VAR RunRate = SELECTEDVALUE(ReelsRevenue[run_rate_billions])
+VAR DailyPlays = SELECTEDVALUE(ReelsRevenue[daily_plays_billions])
+VAR AnnualPlays = DailyPlays * 365
+RETURN
+IF(
+    ISBLANK(RunRate) || ISBLANK(DailyPlays),
+    BLANK(),
+    DIVIDE(RunRate, AnnualPlays) * 1000  -- Revenue in millions per billion plays
+)
+
+
+================================================================================
+9. ANIMATED COUNTER MEASURE (FOR REAL-TIME DISPLAY)
+================================================================================
+
+-- Use with a timer visual or streaming dataset for live effect
+
+Simulated Live Revenue =
+VAR SecondsElapsed = HOUR(NOW()) * 3600 + MINUTE(NOW()) * 60 + SECOND(NOW())
+VAR RevenuePerSecond = 1585  -- Based on $50B annual
+RETURN
+SecondsElapsed * RevenuePerSecond
+
+Today's Reels Revenue So Far =
+VAR HoursElapsed = HOUR(NOW()) + DIVIDE(MINUTE(NOW()), 60)
+VAR RevenuePerHour = 5700000  -- $5.7M per hour
+RETURN
+HoursElapsed * RevenuePerHour
+
+
+================================================================================
+10. GROWTH VELOCITY MEASURES
+================================================================================
+
+-- Average monthly revenue growth rate
+
+Monthly Growth Rate =
+VAR FirstRunRate = 3  -- $3B in Oct 2022
+VAR LatestRunRate = 50  -- $50B in Oct 2025
+VAR MonthsBetween = 36
+RETURN
+POWER(DIVIDE(LatestRunRate, FirstRunRate), DIVIDE(1, MonthsBetween)) - 1
+
+-- Projected run rate (simple linear projection)
+
+Projected Run Rate (Next Year) =
+VAR CurrentRunRate = 50
+VAR GrowthRate = 0.15  -- Assume 15% annual growth
+RETURN
+CurrentRunRate * (1 + GrowthRate)
+
+
+================================================================================
+DATA PREPARATION NOTES
+================================================================================
+
+1. Replace "N/A" values with BLANK() in Power Query:
+   = Table.ReplaceValue(#"Previous Step", "N/A", null, Replacer.ReplaceValue, {"column"})
+
+2. Convert date column to Date type
+
+3. Create a sort order column if needed:
+   QuarterSort = YEAR([date]) * 10 + QUARTER([date])
+
+4. For comparison charts, create a separate "Comparisons" table:
+   | Company | Revenue |
+   |---------|---------|
+   | Reels   | 50      |
+   | Nike    | 46.3    |
+   | etc.    | etc.    |
+
+================================================================================
